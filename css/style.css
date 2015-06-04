@@ -8,11 +8,11 @@ body {
   padding: 0
 }
 
-#map-canvas {
+.map-canvas {
   height: 100%
 }
 
-#list {
+.list {
   position: fixed;
   left: 10px;
   top: 10px;
@@ -39,10 +39,10 @@ body {
 }
 
 @media only screen and (max-width: 320px){
-#results {
+.results {
 	display: none;
 }
-#list {
+.list {
 	opacity: 0.8;
 }
 }
