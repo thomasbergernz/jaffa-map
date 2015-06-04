@@ -39,8 +39,10 @@ body {
 }
 
 @media only screen and (max-width: 320px){
-  #results {
-    display: none;
-  }
-
+#results {
+	display: none;
+}
+#list {
+	opacity: 0.8;
+}
 }
