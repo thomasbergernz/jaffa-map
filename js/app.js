@@ -3,9 +3,8 @@
   * to be populated via the Foursquare API
   */
 var Model = {
-	//currentMarker: ko.observable(null), // do we need this really?
 	locations: ko.observableArray()
-	}
+};
 
 /** ViewModel creates the Google Map,
   * ajax call Foursquare API and push 'venue' objects to 'locations' array;
@@ -16,12 +15,12 @@ var apiURL = "https://api.foursquare.com/v2/venues/explore?mode=url&near=Ponsonb
 var foursquarelogo = "https://ss0.4sqi.net/img/poweredByFoursquare/poweredby-full-color-bf549c16c0ab3e1b04706ab5fcb422f1.png";
 var foursquareicon = "https://playfoursquare.s3.amazonaws.com/press/2014/foursquare-logomark.png";
 var streetviewurl = "https://maps.googleapis.com/maps/api/streetview?size=180x120&fov=90&heading=235&pitch=0&location=";
-		
+
 var ViewModel = function() {
 	var self = this;
 	var map, bounds, infowindow; // initialize the required variables for Google map
 
-    self.apiUnavailable = ko.observable(false);    
+    self.apiUnavailable = ko.observable(false);
 
 	/** Initialize map and create map markers and push them to the Model.
 	  */
@@ -29,7 +28,7 @@ var ViewModel = function() {
 		/** error check, if google maps is available
 	      * http://stackoverflow.com/questions/9228958/how-to-check-if-google-maps-api-is-loaded
   		  */
-		
+
   		var mapOptions = {
           disableDefaultUI: true,
           mapTypeId: google.maps.MapTypeId.TERRAIN
@@ -39,7 +38,7 @@ var ViewModel = function() {
         infowindow = new google.maps.InfoWindow({
           content: null
         });
-        
+
 	    if(typeof window.google === 'object' && typeof window.google.maps === 'object') { // verify that we have a map object to work with
 		    // ajax call
 			// get the data from the 3rd party API
@@ -47,18 +46,19 @@ var ViewModel = function() {
 		        var items = data.response.groups[0].items;
 		        //console.log(items);
 		        items.sort(function(a,b){ // sort by name ascending http://www.javascriptkit.com/javatutors/arraysort2.shtml
-			        var nameA=a.venue.name.toLowerCase(), nameB=b.venue.name.toLowerCase()
-					if(nameA < nameB) return -1
-					if(nameA > nameB) return 1
-					return 0
+			        var nameA=a.venue.name.toLowerCase(), nameB=b.venue.name.toLowerCase();
+					if(nameA < nameB) return -1;
+					if(nameA > nameB) return 1;
+					return 0;
 				});
 				// create marker objects populated with 3rd party api data
-		        for (var i = 0; i < items.length; i++) {
+				var itemsLength = items.length;
+		        for (var i = 0; i < itemsLength; i++) {
 		            var coordinates = new google.maps.LatLng(items[i].venue.location.lat, items[i].venue.location.lng);
 		            // construct a string containing the title, category and address of the location
 		            // user input 'restaurant' will produce results even if not in the title of the location
-		            var searchblob = myUtils.convert_accented_characters(items[i].venue.name) + " " + 
-		            myUtils.toFriendlyString(items[i].venue.location.address) + " " + 
+		            var searchblob = myUtils.convert_accented_characters(items[i].venue.name) + " " +
+		            myUtils.toFriendlyString(items[i].venue.location.address) + " " +
 		            myUtils.convert_accented_characters(myUtils.toFriendlyString(items[i].venue.categories[0].name));
 		            var marker = new google.maps.Marker({ // populate the marker attributes
 		              position: coordinates,
@@ -74,7 +74,7 @@ var ViewModel = function() {
 		              address: myUtils.toFriendlyString(items[i].venue.location.address),
 		              category: myUtils.toFriendlyString(items[i].venue.categories[0].name)
 		        	});
-	
+
 					/** add event listener for each marker
 					  * compile content for infoWindow
 					  */
@@ -87,36 +87,36 @@ var ViewModel = function() {
 							"<p><a href=" + self.url + ">" + self.url + "</a></p>" +
 							"<p><img src='"+foursquarelogo+"'alt='foursquare' width='200'></p>" +
 							"<p><img src='"+self.streetview+"'alt='foursquare'></p>");
-						
+
 						// open infoWindow and clear markers
 						infowindow.open(map, self);
 						clearHighlight();
-						
+
 						// Modify marker (and list) to show selected status.
 						self.highlight(true);
-						
+
 						// Move map viewport to center selected item.
 						map.panTo(self.position);
 			        }); // END google.maps.event.addListener(marker, 'click', function ()
-			
+
 			        /** click event to close infowindow
 			          * This function will clear the selected location
 			          */
 			        google.maps.event.addListener(infowindow, 'closeclick', function() {
 			          clearHighlight();
 			        });
-			
+
 			        // Modify map to show all markers
 			        bounds.extend(coordinates);
-			
+
 			        //Add marker to array
 			        Model.locations.push(marker);
-			        
+
 			    } // END for loop
-	      
+
 			map.fitBounds(bounds);
 			map.setCenter(bounds.getCenter());
-	
+
 		    }).fail(function(e) { // handle error in case we can't get the data from the API
 			    console.log('Could not get data from API!');
 			    self.apiUnavailable(true);
@@ -130,7 +130,7 @@ var ViewModel = function() {
   		}
 	}(); // END initialize function
 
-	/** FILTER and return items that match query 
+	/** FILTER and return items that match query
 	 *  http://www.strathweb.com/2012/07/knockout-js-pro-tips-working-with-observable-arrays/
 	 */
 	self.filterText = ko.observable(''); // reset locations filter
@@ -147,7 +147,7 @@ var ViewModel = function() {
     self.myFilteredResults.subscribe(function() {
       var difference = ko.utils.compareArrays(Model.locations(), self.myFilteredResults());
       ko.utils.arrayForEach(difference, function(marker) {
-        if (marker.status === 'deleted') { 
+        if (marker.status === 'deleted') {
           marker.value.setMap(null);
         } else {
           marker.value.setMap(map);
@@ -179,11 +179,11 @@ myUtils = new CommonUtils();
 function CommonUtils() {
 	this.toFriendlyString = function(str) {
 		//this.log("+toFriendlyString()");
-		if(str == undefined || str == "undefined" || str == null || str == "null") {
+		if(str === undefined || str == "undefined" || str === null || str == "null") {
 			return "";
 		}
 		return str;
-	}
+	};
 	/** Handle accented characters in search/filter input
 	 */
 	this.convert_accented_characters = function(str) {
@@ -238,12 +238,12 @@ function CommonUtils() {
 	    conversions['ij'] = 'ĳ';
 	    conversions['OE'] = 'Œ';
 	    conversions['f'] = 'ƒ';
-	
+
 	    for(var i in conversions){
 	        var re = new RegExp(conversions[i],"g");
 	        str = str.replace(re,i);
 	    }
-	
+
 	    return str;
 	}
 }
