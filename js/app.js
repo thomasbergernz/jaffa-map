@@ -98,6 +98,7 @@ var ViewModel = function() {
       
       						// Move map viewport to center selected item.
       						map.panTo(self.position);
+      						map.panBy(0,-140);
     			      }); // END google.maps.event.addListener(marker, 'click', function ()
     
     			        /** click event to close infowindow
